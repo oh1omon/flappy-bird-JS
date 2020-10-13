@@ -23,14 +23,9 @@ class Pipe {
         parentEl.appendChild(pipeEl);
     }
 
-    killSelf() {
-        var scope = this;
-        clearInterval(scope.moveLeft);
-    }
-
     moveLeft(classMaker) {
         var scope = this;
-        setInterval(function () {
+        var moving = setInterval(function () {
             scope.counter -= 0.5;
             document.getElementsByClassName(
                 `${classMaker}`
@@ -38,8 +33,8 @@ class Pipe {
 
             if (scope.counter < -16) {
                 document.getElementsByClassName(`${classMaker}`)[0].remove();
-                scope.__proto__.killSelf();
-            }
+                clearInterval(moving);
+            } else if() {}
         }, 1000 / 60);
     }
 }
