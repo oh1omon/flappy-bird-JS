@@ -1,37 +1,13 @@
-class Background {
-    constructor(el, bgImg = '../img/bg.png') {
-        this.el = el; // why?
-
-        this.style = {
-            left: 0,
-            top: 0,
-            position: 'fixed',
-            height: '100%',
-            width: '100%',
-            backgroundRepeat: 'repeat-x',
-            backgroundPosition: '0 0',
-            backgroundSize: 'auto 100%',
-            backgroundImage: `url("${bgImg}")`,
-        };
-        this.movementRatio = 250;
-        Object.assign(this.el.style, this.style);
-    }
-
-    scrollSideWay(distance) {
-        this.el.style.backgroundPosition = `-${distance / this.movementRatio}px 0px`;
-    }
-}
-
 class Pipe {
     constructor(className, angle, flip, top = null, bottom = 0, parentEl = document.body) {
         this.class = className;
-        this.imgSrc = '../img/pipe.png';
+        this.imgSrc = '../img/pipe.svg';
         this.size = null;
         this.style = {
             position: 'fixed',
             top: top,
             left: '100%',
-            width: '150px',
+            width: '8vw',
             bottom: bottom,
             transform: `rotate(${angle}deg)`,
         };
@@ -47,16 +23,11 @@ class Pipe {
         parentEl.appendChild(pipeEl);
     }
 
-    /**
-     * Calculate the actual distance that the pipe needs to be shifted to the left
-     * according to the distance parameter and the movement ratio
-     * @param {Number} distance
-     */
-    /*     moveLeft(distance) {
-        let _current = parseInt(this.style.left);
-        document.getElementsByClassName(this.class)[1].style.left = `${
-            _current - distance / this.movementRatio
-        }px`; */
+    killSelf() {
+        var scope = this;
+        clearInterval(scope.moveLeft);
+    }
+
     moveLeft(classMaker) {
         var scope = this;
         setInterval(function () {
@@ -64,21 +35,26 @@ class Pipe {
             document.getElementsByClassName(
                 `${classMaker}`
             )[0].style.left = `${scope.counter}%`;
-        }, 17);
+
+            if (scope.counter < -16) {
+                document.getElementsByClassName(`${classMaker}`)[0].remove();
+                scope.__proto__.killSelf();
+            }
+        }, 1000 / 60);
     }
 }
 
 class Bird {
     constructor(parentEl) {
         this.id = 'bird_' + Math.floor(Math.random() * 2000);
-        this.imgSrc = '../img/bird.png';
+        this.imgSrc = '../img/bird.svg';
         this.jumping = false;
         this.fallen = false; // by default a bird is not fallen until it has thrown the FALLEN_BIRD event
         this.style = {
             position: 'fixed',
-            top: '60%' /* Math.floor(Math.random() * 80) + '%' */,
-            left: '15%' /* Math.floor(Math.random() * 2000) + 'px' */,
-            width: '100px',
+            top: '60%',
+            left: '15%',
+            width: '4vw',
         };
         this.movementRatio = 20;
 
@@ -164,54 +140,33 @@ class Bird {
     }
 }
 
+var animateBG = function (distance) {
+    document.getElementsByClassName('background')[0].style.backgroundPosition = `-${
+        distance / 200
+    }px 0px`;
+};
+
 $(document).ready(function () {
-    // instance of the class Background, "this" variable inside an instance refers to the instance itself
-    // not to the class
-    var bg = new Background(document.getElementById('background')); // bg is an instance of the class Background
-
-    console.log(bg.movementRatio); // will be 50
-    console.log(bg.scrollSideWay); // content of scrollSideWay
-
-    // var birds = new Array(10);
-
-    // for (var i=0; i<birds.length; i++){
-    //     birds[i] = new Bird(document.body)
-    // }
-
     var bird1 = new Bird(document.body);
 
-    /*     var pipes = new Array(20); // pipes = [undefined,undefined,,,,,,,,]
-
-    // create i, set it to zero, do the following things until i equals to pipes.length
-    for (var i = 0; i < pipes.length; i++) {
-        var left = Math.floor(Math.random() * 10000) + 'px';
-        pipes[i] = new Pipe(left, 0, left, false, null, 0);
-        pipes[i] = new Pipe(left, 180, left, true, 0, null);
-    }
- */
     var offset = 0;
 
-    setInterval(function () {
-        var classMaker = Math.floor(Math.random() * 10000);
-        pipe1 = new Pipe(classMaker, 0, false, null, 0);
-        pipe2 = new Pipe(classMaker + 1, 180, true, 0, null);
+    var animatePipesCaller = setInterval(function () {
+        var classMaker = Math.floor(Math.random() * 40000);
+        pipe1 = new Pipe(classMaker, 0, false, null, `${-75 + classMaker / 1000}vh`);
+        pipe2 = new Pipe(classMaker + 1, 180, true, `${-35 - classMaker / 1000}vh`, null);
         pipe1.moveLeft(`${classMaker}`);
         pipe2.moveLeft(`${classMaker + 1}`);
-    }, 1000);
+    }, 900);
 
-    var animation = setInterval(function () {
+    var animateBGCaller = setInterval(function () {
         offset += 200;
-
-        bg.scrollSideWay(offset);
-
-        /*         pipes.forEach(function (pipe) {
-            console.log(pipe);
-            pipe.moveLeft(offset);
-        }); */
+        animateBG(offset);
     }, 10);
 
     document.addEventListener('FALLEN_BIRD', function () {
         console.log('Detected a fallen bird');
-        clearInterval(animation);
+        clearInterval(animateBGCaller);
+        clearInterval(animatePipesCaller);
     });
 });
