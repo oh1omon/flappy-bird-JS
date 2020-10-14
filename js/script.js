@@ -1,3 +1,31 @@
+class Background {
+    constructor() {
+        this.counter = 0;
+    }
+
+    animateBG() {
+        var scope = this;
+
+        var background = document.getElementsByClassName('background')[0];
+
+        var movingBg = setInterval(function () {
+            scope.counter += 0.05;
+
+            background.style.backgroundPosition = `-${scope.counter}vw 0px`;
+
+            if (scope.counter > 100) {
+                background.style.backgroundPosition = `-${0}vw 0px`;
+                scope.counter = 0;
+            }
+
+            document.addEventListener('FALLEN_BIRD', function () {
+                clearInterval(movingBg);
+                console.log('Background has been stopped');
+            });
+        }, 1000 / 240);
+    }
+}
+
 class Pipe {
     constructor(className, angle, flip, top = null, bottom = 0, parentEl = document.body) {
         this.class = className;
@@ -10,6 +38,7 @@ class Pipe {
             width: '8vw',
             bottom: bottom,
             transform: `rotate(${angle}deg)`,
+            transition: 'linear',
         };
         this.flip = flip;
         this.movementRatio = 100;
@@ -26,7 +55,7 @@ class Pipe {
     moveLeft(classMaker) {
         var scope = this;
         var moving = setInterval(function () {
-            scope.counter -= 0.5;
+            scope.counter -= 0.125;
             document.getElementsByClassName(
                 `${classMaker}`
             )[0].style.left = `${scope.counter}%`;
@@ -34,8 +63,13 @@ class Pipe {
             if (scope.counter < -16) {
                 document.getElementsByClassName(`${classMaker}`)[0].remove();
                 clearInterval(moving);
-            } else if() {}
-        }, 1000 / 60);
+            }
+
+            document.addEventListener('FALLEN_BIRD', function () {
+                clearInterval(moving);
+                console.log('Pipe has been stopped');
+            });
+        }, 1000 / 240);
     }
 }
 
@@ -50,6 +84,7 @@ class Bird {
             top: '60%',
             left: '15%',
             width: '4vw',
+            transition: 'linear',
         };
         this.movementRatio = 20;
 
@@ -135,12 +170,6 @@ class Bird {
     }
 }
 
-var animateBG = function (distance) {
-    document.getElementsByClassName('background')[0].style.backgroundPosition = `-${
-        distance / 200
-    }px 0px`;
-};
-
 $(document).ready(function () {
     var bird1 = new Bird(document.body);
 
@@ -148,20 +177,17 @@ $(document).ready(function () {
 
     var animatePipesCaller = setInterval(function () {
         var classMaker = Math.floor(Math.random() * 40000);
-        pipe1 = new Pipe(classMaker, 0, false, null, `${-75 + classMaker / 1000}vh`);
-        pipe2 = new Pipe(classMaker + 1, 180, true, `${-35 - classMaker / 1000}vh`, null);
-        pipe1.moveLeft(`${classMaker}`);
-        pipe2.moveLeft(`${classMaker + 1}`);
+        bottomPipe = new Pipe(classMaker, 0, false, null, `${-75 + classMaker / 1000}vh`);
+        topPipe = new Pipe(classMaker + 1, 180, true, `${-35 - classMaker / 1000}vh`, null);
+        bottomPipe.moveLeft(`${classMaker}`);
+        topPipe.moveLeft(`${classMaker + 1}`);
     }, 900);
 
-    var animateBGCaller = setInterval(function () {
-        offset += 200;
-        animateBG(offset);
-    }, 10);
+    var background = new Background();
+    background.animateBG();
 
     document.addEventListener('FALLEN_BIRD', function () {
         console.log('Detected a fallen bird');
-        clearInterval(animateBGCaller);
         clearInterval(animatePipesCaller);
     });
 });
