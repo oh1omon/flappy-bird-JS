@@ -24,6 +24,7 @@ button:focus {
   background: url("../img/button.svg") no-repeat center center/cover;
 }
 .btn-pause {
+  display: none;
   margin: 1rem;
   text-transform: uppercase;
   font-family: "Press Start 2P", cursive;

@@ -39,6 +39,39 @@ class HeroBanner {
     }
 }
 
+class EndScreen {
+    constructor(score) {
+        this.id = 'end-screen';
+        this.style = {
+            top: '22.5%',
+            left: '20%',
+            position: 'fixed',
+            width: '60vw',
+            height: '55vh',
+            background: 'url("../img/hero-banner.svg") no-repeat center center/cover',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexFlow: 'row wrap',
+            zIndex: '2',
+            textAlign: 'center',
+        };
+
+        var endEl = document.createElement('div');
+        endEl.id = this.id;
+        endEl.innerHTML =
+            `<div><p>Ah shit, heir we go again. You scored ${score} points. Is that really your maximum? Pathetic...</p></div> <button class="btn back-to-start">back</button>`;
+        Object.assign(endEl.style, this.style);
+        document.body.appendChild(endEl);
+        document
+            .getElementsByClassName('back-to-start')[0]
+            .addEventListener('click', function () {
+                document.getElementById('end-screen').remove();
+                document.getElementById('hero-banner').style.display = 'flex';
+            });
+    }
+}
+
 class About {
     constructor() {
         this.id = 'about-project';
@@ -196,6 +229,9 @@ class Bird {
             document.getElementById(scope.id).classList.add('falling');
         }, 300);
     }
+    killSelf() {
+        document.getElementById(this.id).remove()
+    }
 }
 
 
@@ -213,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var newScore = 0;
 
         document.getElementById('hero-banner').style.display = 'none';
+        document.getElementsByClassName('btn-pause')[0].style.display = 'inline';
 
         var background = new Background();
 
@@ -256,8 +293,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if(newScore > currentMaxScore || currentMaxScore === null) {
                 localStorage.setItem('score', `${newScore}`)
             }
+
+            const endScreen = new EndScreen(newScore);
+
+            document.getElementsByClassName('btn-pause')[0].style.display = 'none';
             clearInterval(pipesCaller);
             clearInterval(animationInterval);
+            bird.killSelf();
+            pipeArray.forEach((pipe) => {
+                pipe.killSelf();
+            });
+            pipeArray.length = 0;
         });
     });
 
