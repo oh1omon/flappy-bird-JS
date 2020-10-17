@@ -153,7 +153,9 @@ class Bird {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.getElementsByClassName('play')[0].addEventListener('click', function () {
+    document.getElementById('hero-banner').style.display = 'none';
+
     var background = new Background();
 
     var bird = new Bird(document.body);
