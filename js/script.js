@@ -1,3 +1,44 @@
+class HeroBanner {
+    constructor() {
+        this.id = 'hero-banner';
+        this.maximalScore = function() {
+            const score = localStorage.getItem('score')
+             if (score != null){
+                return score
+            } else {
+                return 0
+            };
+        };
+
+        var iconsDiv = document.createElement('div');
+        iconsDiv.classList.add('icons')
+        iconsDiv.innerHTML = '<a href="https://www.instagram.com/oh1omon/"><img src="img/instagram-logo.svg" alt="instagram link"/></a><a href="https://github.com/oh1omon"><img src="img/github-logo.svg" alt="github link"/></a><a id="info-link"><img src="img/info-icon.svg" alt="information button" /></a>'
+
+        var copyRightDiv = document.createElement('div');
+        copyRightDiv.classList.add('copyright-text');
+        copyRightDiv.innerHTML = '<p>This project is done only for study purposes, meaning that it is not pretending to earn any money. If you own any of images and you do not want them to be presented here, please contact me.</p>'
+
+        var maxDiv = document.createElement('div');
+        maxDiv.classList.add('max-score');
+        maxDiv.innerHTML = `<p>maximum score<br />${localStorage.getItem('score')}</p>`
+
+
+        var contDiv = document.createElement('div');
+        contDiv.classList.add('container');
+        contDiv.innerHTML = '<button class="btn play">play!</button>'
+        contDiv.appendChild(maxDiv);
+        contDiv.appendChild(copyRightDiv);
+        contDiv.appendChild(iconsDiv);
+
+        var heroDiv = document.createElement('div');
+        heroDiv.id = 'hero-banner';
+        heroDiv.appendChild(contDiv);
+
+
+        document.body.appendChild(heroDiv);
+    }
+}
+
 class About {
     constructor() {
         this.id = 'about-project';
@@ -37,7 +78,8 @@ class Background {
         this.background = document.getElementsByClassName('background')[0];
     }
 
-    animateBG() {
+    animateBG(currentPoints) {
+        document.getElementById('score').innerText = `${currentPoints}`;
         var scope = this;
 
         if (scope.counter >= 100) {
@@ -156,52 +198,69 @@ class Bird {
     }
 }
 
-document.getElementsByClassName('play')[0].addEventListener('click', function () {
-    document.getElementById('hero-banner').style.display = 'none';
 
-    var background = new Background();
-
-    var bird = new Bird(document.body);
-
-    var pipeArray = new Array();
-
-    var pipesCaller = setInterval(function () {
-        var idMaker = Math.floor(Math.random() * 40000);
-        bottomPipe = new Pipe(idMaker, 0, false, null, `${-75 + idMaker / 1000}vh`);
-        topPipe = new Pipe(idMaker + 1, 180, true, `${-35 - idMaker / 1000}vh`, null);
-        pipeArray.push(bottomPipe, topPipe);
-    }, 900);
-
-    var animationInterval = setInterval(function () {
-        pipeArray.forEach((pipe) => {
-            if (pipe.counter <= -16) {
-                pipe.killSelf();
-                pipeArray.shift();
-            } else if (15 < pipe.counter && pipe.counter < 19) {
-                if (
-                    pipe.flip && parseInt(document.getElementById(bird.id).style.top) < (parseInt(pipe.style.height) + parseInt(pipe.style.top))
-                ) {
-                    console.log('The bird was inserted into the up pipe');
-                    document.dispatchEvent(bird.fallenBirdEvent);
-                } else if (
-                    pipe.flip === false && (parseInt(document.getElementById(bird.id).style.top)) > 100 - ((parseInt(pipe.style.height) + parseInt(pipe.style.bottom)))
-                ) {
-                    console.log('The bird was inserted into the down pipe');
-                    document.dispatchEvent(bird.fallenBirdEvent);
-                }
-            }
-            pipe.moveLeft();
-        });
-        background.animateBG();
-        bird.flying();
-    }, 1000 / 60);
+document.addEventListener('DOMContentLoaded', function() {
+    var heroBanner = new HeroBanner();
 
     document.getElementById('info-link').addEventListener('click', function () {
         new About();
     });
 
-    document.addEventListener('FALLEN_BIRD', function () {
-        clearInterval(pipesCaller);
-        clearInterval(animationInterval);
+    document.getElementsByClassName('play')[0].addEventListener('click', function () {
+
+        var currentMaxScore = localStorage.getItem('score');
+
+        var newScore = 0;
+
+        document.getElementById('hero-banner').style.display = 'none';
+
+        var background = new Background();
+
+        var bird = new Bird(document.body);
+
+        var pipeArray = new Array();
+
+        var pipesCaller = setInterval(function () {
+            var idMaker = Math.floor(Math.random() * 40000);
+            bottomPipe = new Pipe(idMaker, 0, false, null, `${-75 + idMaker / 1000}vh`);
+            topPipe = new Pipe(idMaker + 1, 180, true, `${-35 - idMaker / 1000}vh`, null);
+            pipeArray.push(bottomPipe, topPipe);
+        }, 900);
+
+        var animationInterval = setInterval(function () {
+            pipeArray.forEach((pipe) => {
+                if (pipe.counter <= -16) {
+                    pipe.killSelf();
+                    pipeArray.shift();
+                    newScore += 0.5
+                } else if (15 < pipe.counter && pipe.counter < 19) {
+                    if (
+                        pipe.flip && parseInt(document.getElementById(bird.id).style.top) < (parseInt(pipe.style.height) + parseInt(pipe.style.top))
+                    ) {
+                        console.log('The bird was inserted into the up pipe');
+                        document.dispatchEvent(bird.fallenBirdEvent);
+                    } else if (
+                        pipe.flip === false && (parseInt(document.getElementById(bird.id).style.top)) > 100 - ((parseInt(pipe.style.height) + parseInt(pipe.style.bottom)))
+                    ) {
+                        console.log('The bird was inserted into the down pipe');
+                        document.dispatchEvent(bird.fallenBirdEvent);
+                    }
+                }
+                pipe.moveLeft();
+            });
+            background.animateBG(newScore);
+            bird.flying();
+        }, 1000 / 60);
+
+        document.addEventListener('FALLEN_BIRD', function () {
+            if(newScore > currentMaxScore || currentMaxScore === null) {
+                localStorage.setItem('score', `${newScore}`)
+            }
+            clearInterval(pipesCaller);
+            clearInterval(animationInterval);
+        });
     });
+
+
 });
+
