@@ -149,7 +149,7 @@ class Bird {
     }
 }
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
     var background = new Background();
 
     var bird = new Bird(document.body);
@@ -163,12 +163,11 @@ $(document).ready(function () {
         pipeArray.push(bottomPipe, topPipe);
     }, 900);
 
-    var everythingInterval = setInterval(function () {
+    var animationInterval = setInterval(function () {
         pipeArray.forEach((pipe) => {
             if (pipe.counter <= -16) {
                 pipe.killSelf();
                 pipeArray.shift();
-                console.log(pipeArray[1]);
             }
             pipe.moveLeft();
         });
@@ -179,6 +178,6 @@ $(document).ready(function () {
     document.addEventListener('FALLEN_BIRD', function () {
         console.log('Detected a fallen bird');
         clearInterval(pipesCaller);
-        clearInterval(everythingInterval);
+        clearInterval(animationInterval);
     });
 });
