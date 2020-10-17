@@ -61,6 +61,7 @@ class Pipe {
             top: top,
             left: '100%',
             width: '8vw',
+            height: '92vh',
             bottom: bottom,
             transform: `rotate(${angle}deg)`,
             transition: 'linear 0.05s',
@@ -97,9 +98,10 @@ class Bird {
         this.fallen = false; // by default a bird is not fallen until it has thrown the FALLEN_BIRD event
         this.style = {
             position: 'fixed',
-            top: '60%',
+            top: '60vh',
             left: '15%',
             width: '4vw',
+            height: '6.4vh',
             transition: 'linear 0.05s',
         };
         this.fallenBirdEvent = new CustomEvent('FALLEN_BIRD', { detail: this.id });
@@ -130,14 +132,15 @@ class Bird {
 
         if (birdPosition >= 100) {
             document.dispatchEvent(scope.fallenBirdEvent);
+            console.log('Detected a fallen bird');
         } else if (scope.jumping) {
             birdPosition -= 0.7;
 
-            document.getElementById(scope.id).style.top = `${birdPosition}%`;
+            document.getElementById(scope.id).style.top = `${birdPosition}vh`;
         } else {
             birdPosition += 1;
 
-            document.getElementById(scope.id).style.top = `${birdPosition}%`;
+            document.getElementById(scope.id).style.top = `${birdPosition}vh`;
         }
     }
 
@@ -174,6 +177,18 @@ document.getElementsByClassName('play')[0].addEventListener('click', function ()
             if (pipe.counter <= -16) {
                 pipe.killSelf();
                 pipeArray.shift();
+            } else if (15 < pipe.counter && pipe.counter < 19) {
+                if (
+                    pipe.flip && parseInt(document.getElementById(bird.id).style.top) < (parseInt(pipe.style.height) + parseInt(pipe.style.top))
+                ) {
+                    console.log('The bird was inserted into the up pipe');
+                    document.dispatchEvent(bird.fallenBirdEvent);
+                } else if (
+                    pipe.flip === false && (parseInt(document.getElementById(bird.id).style.top)) > 100 - ((parseInt(pipe.style.height) + parseInt(pipe.style.bottom)))
+                ) {
+                    console.log('The bird was inserted into the down pipe');
+                    document.dispatchEvent(bird.fallenBirdEvent);
+                }
             }
             pipe.moveLeft();
         });
@@ -186,7 +201,6 @@ document.getElementsByClassName('play')[0].addEventListener('click', function ()
     });
 
     document.addEventListener('FALLEN_BIRD', function () {
-        console.log('Detected a fallen bird');
         clearInterval(pipesCaller);
         clearInterval(animationInterval);
     });
