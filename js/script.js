@@ -70,6 +70,7 @@ class Bird {
             width: '4vw',
             transition: 'linear 0.05s',
         };
+        this.fallenBirdEvent = new CustomEvent('FALLEN_BIRD', { detail: this.id });
 
         var birdEl = document.createElement('img');
         birdEl.src = this.imgSrc;
@@ -78,12 +79,12 @@ class Bird {
         Object.assign(birdEl.style, this.style);
 
         parentEl.appendChild(birdEl);
-        /*         this.addGravity(); */
+
         var scope = this;
 
         document.addEventListener('keydown', function () {
-            if (scope.fallen) {
-                return; // don't perform jumping if the bird has fallen
+            if (scope.fallen || scope.jumping) {
+                return;
             }
 
             scope.jump();
@@ -123,9 +124,8 @@ class Bird {
 
         var birdPosition = parseInt(document.getElementById(scope.id).style.top);
 
-        if (parseInt(scope.style.top) >= 100) {
-            var fallenBird = new CustomEvent('FALLEN_BIRD', { detail: scope.id });
-            document.dispatchEvent(fallenBird);
+        if (birdPosition >= 100) {
+            document.dispatchEvent(scope.fallenBirdEvent);
         } else if (scope.jumping) {
             birdPosition -= 0.7;
 
