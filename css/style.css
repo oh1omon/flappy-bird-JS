@@ -2,6 +2,9 @@
     margin: 0;
     padding: 0;
 }
+body {
+    font-family: 'Press Start 2P', cursive;
+}
 .background {
     top: 0;
     left: 0;
@@ -9,4 +12,8 @@
     width: 100vw;
     background-position: 0 0;
     background: url('../img/bg.svg') repeat-x center center/cover;
+}
+.falling {
+    transform: rotate(60deg);
+    transition: ease-in-out 0.2s;
 }
