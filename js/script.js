@@ -1,3 +1,35 @@
+class About {
+    constructor() {
+        this.id = 'about-project';
+        this.style = {
+            top: '22.5%',
+            left: '20%',
+            position: 'fixed',
+            width: '60vw',
+            height: '55vh',
+            background: 'url("../img/hero-banner.svg") no-repeat center center/cover',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexFlow: 'row wrap',
+            zIndex: '2',
+            textAlign: 'center',
+        };
+
+        var aboutEl = document.createElement('div');
+        aboutEl.id = this.id;
+        aboutEl.innerHTML =
+            '<div><p>Hello! My name is Artem Zagarov, and I am a Full Stack Web Development and Design student. The site is made by me for studying purposes. Special thanks to Pham Hoang for advising about development.</p><p>If you found any bugs, please contact me via Instagram.</p>Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from<a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a> </div> <button class="btn back-to-start">back</button>';
+        Object.assign(aboutEl.style, this.style);
+        document.body.appendChild(aboutEl);
+        document
+            .getElementsByClassName('back-to-start')[0]
+            .addEventListener('click', function () {
+                document.getElementById('about-project').remove();
+            });
+    }
+}
+
 class Background {
     constructor() {
         this.counter = 0;
@@ -91,34 +123,6 @@ class Bird {
         });
     }
 
-    /*     addGravity() {
-        var scope = this;
-        var gravity = setInterval(function () {
-            if (scope.jumping) {
-                return;
-            }
-
-            var _current = parseInt(scope.style.top);
-
-            if (_current == 100) {
-                var fallenBird = new CustomEvent('FALLEN_BIRD', { detail: scope.id });
-                document.dispatchEvent(fallenBird);
-            }
-
-            var _new = _current < 100 ? _current + 1 : _current;
-            scope.style.top = _new;
-
-            document.getElementById(scope.id).style.top = `${_current}%`;
-        }, 1000 / 35);
-
-        document.addEventListener('FALLEN_BIRD', function (e) {
-            if (e.detail == scope.id) {
-                scope.fallen = true; // set status of this bird to fallen
-                clearInterval(gravity);
-            }
-        });
-    } */
-
     flying() {
         var scope = this;
 
@@ -174,6 +178,10 @@ document.addEventListener('DOMContentLoaded', function () {
         background.animateBG();
         bird.flying();
     }, 1000 / 60);
+
+    document.getElementById('info-link').addEventListener('click', function () {
+        new About();
+    });
 
     document.addEventListener('FALLEN_BIRD', function () {
         console.log('Detected a fallen bird');
