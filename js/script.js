@@ -1,47 +1,57 @@
 class HeroBanner {
     constructor() {
         this.id = 'hero-banner';
-        this.maximalScore = function() {
-            const score = localStorage.getItem('score')
-             if (score != null){
-                return score
+        this.maximalScore = function () {
+            const score = localStorage.getItem('score');
+            if (score != null) {
+                return score;
             } else {
-                return 0
-            };
+                return 0;
+            }
         };
 
-        var iconsDiv = document.createElement('div');
-        iconsDiv.classList.add('icons')
-        iconsDiv.innerHTML = '<a href="https://www.instagram.com/oh1omon/"><img src="img/instagram-logo.svg" alt="instagram link"/></a><a href="https://github.com/oh1omon"><img src="img/github-logo.svg" alt="github link"/></a><a id="info-link"><img src="img/info-icon.svg" alt="information button" /></a>'
+        const iconsDiv = document.createElement('div');
+        iconsDiv.classList.add('icons');
+        iconsDiv.innerHTML =
+            '<a href="https://www.instagram.com/oh1omon/">' +
+            '<img src="img/instagram-logo.svg" alt="instagram link"/>' +
+            '</a><a href="https://github.com/oh1omon">' +
+            '<img src="img/github-logo.svg" alt="github link"/>' +
+            '</a>' +
+            '<a id="info-link">' +
+            '<img src="img/info-icon.svg" alt="information button" />' +
+            '</a>';
 
-        var copyRightDiv = document.createElement('div');
+        const copyRightDiv = document.createElement('div');
         copyRightDiv.classList.add('copyright-text');
-        copyRightDiv.innerHTML = '<p>This project is done only for study purposes, meaning that it is not pretending to earn any money. If you own any of images and you do not want them to be presented here, please contact me.</p>'
+        copyRightDiv.innerHTML =
+            '<p>This project is done only for study purposes, meaning that it is not ' +
+            'pretending to earn any money. If you own any of images and you do not want them to be presented' +
+            ' here, please contact me.</p>';
 
-        var maxDiv = document.createElement('div');
+        const maxDiv = document.createElement('div');
         maxDiv.classList.add('max-score');
-        maxDiv.innerHTML = `<p>maximum score<br />${localStorage.getItem('score')}</p>`
+        maxDiv.innerHTML = `<p>maximum score<br />${localStorage.getItem('score')}</p>`;
 
-
-        var contDiv = document.createElement('div');
+        const contDiv = document.createElement('div');
         contDiv.classList.add('container');
-        contDiv.innerHTML = '<button class="btn play">play!</button>'
+        contDiv.innerHTML = '<button class="btn play">play!</button>';
         contDiv.appendChild(maxDiv);
         contDiv.appendChild(copyRightDiv);
         contDiv.appendChild(iconsDiv);
 
-        var heroDiv = document.createElement('div');
+        const heroDiv = document.createElement('div');
         heroDiv.id = 'hero-banner';
         heroDiv.appendChild(contDiv);
-
 
         document.body.appendChild(heroDiv);
     }
 }
 
 class EndScreen {
-    constructor(score) {
+    constructor() {
         this.id = 'end-screen';
+        this.score = 0;
         this.style = {
             top: '22.5%',
             left: '20%',
@@ -49,7 +59,7 @@ class EndScreen {
             width: '60vw',
             height: '55vh',
             background: 'url("../img/hero-banner.svg") no-repeat center center/cover',
-            display: 'flex',
+            display: 'none',
             justifyContent: 'center',
             alignItems: 'center',
             flexFlow: 'row wrap',
@@ -57,18 +67,23 @@ class EndScreen {
             textAlign: 'center',
         };
 
-        var endEl = document.createElement('div');
+        const endEl = document.createElement('div');
         endEl.id = this.id;
-        endEl.innerHTML =
-            `<div><p>Ah shit, heir we go again. You scored ${score} points. Is that really your maximum? Pathetic...</p></div> <button class="btn back-to-start">back</button>`;
+        endEl.innerHTML = `<div>
+                <p>Ah shit, heir we go again. You scored ${this.score} points. Is that really your maximum? Pathetic...</p>
+             </div> 
+             <button class="btn back-to-start">back</button>`;
         Object.assign(endEl.style, this.style);
         document.body.appendChild(endEl);
-        document
-            .getElementsByClassName('back-to-start')[0]
-            .addEventListener('click', function () {
-                document.getElementById('end-screen').remove();
-                document.getElementById('hero-banner').style.display = 'flex';
-            });
+    }
+
+    showSelf(score) {
+        this.score = score;
+        document.getElementById(this.id).style.display = 'flex';
+    }
+
+    killSelf() {
+        document.getElementById(this.id).style.display = 'none';
     }
 }
 
@@ -93,14 +108,19 @@ class About {
         var aboutEl = document.createElement('div');
         aboutEl.id = this.id;
         aboutEl.innerHTML =
-            '<div><p>Hello! My name is Artem Zagarov, and I am a Full Stack Web Development and Design student. The site is made by me for studying purposes. Special thanks to Pham Hoang for advising about development.</p><p>If you found any bugs, please contact me via Instagram.</p>Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> from<a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a> </div> <button class="btn back-to-start">back</button>';
+            '<div><p>Hello! My name is Artem Zagarov, and I am a Full Stack Web Development and Design student. ' +
+            'The site is made by me for studying purposes. ' +
+            'Special thanks to Pham Hoang for advising about development.</p>' +
+            '<p>If you found any bugs, please contact me via Instagram.</p>' +
+            'Icons made by <a href="http://www.freepik.com/" title="Freepik">Freepik</a> ' +
+            'from<a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a> ' +
+            '</div> ' +
+            '<button class="btn back-to-start">back</button>';
         Object.assign(aboutEl.style, this.style);
         document.body.appendChild(aboutEl);
-        document
-            .getElementsByClassName('back-to-start')[0]
-            .addEventListener('click', function () {
-                document.getElementById('about-project').remove();
-            });
+        document.getElementsByClassName('back-to-start')[0].addEventListener('click', function () {
+            document.getElementById('about-project').remove();
+        });
     }
 }
 
@@ -142,7 +162,6 @@ class Pipe {
             transition: 'linear 0.05s',
         };
         this.flip = flip;
-        this.movementRatio = 100;
         this.counter = 100;
 
         var pipeEl = document.createElement('img');
@@ -229,13 +248,15 @@ class Bird {
             document.getElementById(scope.id).classList.add('falling');
         }, 300);
     }
+
     killSelf() {
-        document.getElementById(this.id).remove()
+        document.getElementById(this.id).remove();
     }
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const endScreen = new EndScreen();
 
-document.addEventListener('DOMContentLoaded', function() {
     var heroBanner = new HeroBanner();
 
     document.getElementById('info-link').addEventListener('click', function () {
@@ -243,7 +264,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementsByClassName('play')[0].addEventListener('click', function () {
-
         var currentMaxScore = localStorage.getItem('score');
 
         var newScore = 0;
@@ -255,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var bird = new Bird(document.body);
 
-        var pipeArray = new Array();
+        var pipeArray = [];
 
         var pipesCaller = setInterval(function () {
             var idMaker = Math.floor(Math.random() * 40000);
@@ -269,18 +289,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (pipe.counter <= -16) {
                     pipe.killSelf();
                     pipeArray.shift();
-                    newScore += 0.5
-                } else if (15 < pipe.counter && pipe.counter < 19) {
+                    newScore += 0.5;
+                } else if (11 < pipe.counter && pipe.counter < 19) {
                     if (
-                        pipe.flip && parseInt(document.getElementById(bird.id).style.top) < (parseInt(pipe.style.height) + parseInt(pipe.style.top))
+                        pipe.flip &&
+                        parseInt(document.getElementById(bird.id).style.top) <
+                            parseInt(pipe.style.height) + parseInt(pipe.style.top)
                     ) {
                         console.log('The bird was inserted into the up pipe');
                         document.dispatchEvent(bird.fallenBirdEvent);
-                    } else if (
-                        pipe.flip === false && (parseInt(document.getElementById(bird.id).style.top)) > 100 - ((parseInt(pipe.style.height) + parseInt(pipe.style.bottom)))
-                    ) {
-                        console.log('The bird was inserted into the down pipe');
-                        document.dispatchEvent(bird.fallenBirdEvent);
+                    } else if (pipe.flip === false) {
+                        if (
+                            parseInt(document.getElementById(bird.id).style.top) >
+                            100 - (parseInt(pipe.style.height) + parseInt(pipe.style.bottom))
+                        ) {
+                            console.log('The bird was inserted into the down pipe');
+                            document.dispatchEvent(bird.fallenBirdEvent);
+                        }
                     }
                 }
                 pipe.moveLeft();
@@ -290,11 +315,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000 / 60);
 
         document.addEventListener('FALLEN_BIRD', function () {
-            if(newScore > currentMaxScore || currentMaxScore === null) {
-                localStorage.setItem('score', `${newScore}`)
+            if (newScore > currentMaxScore || currentMaxScore === null) {
+                localStorage.setItem('score', `${newScore}`);
             }
 
-            const endScreen = new EndScreen(newScore);
+            endScreen.showSelf(newScore);
+
+            document.getElementsByClassName('back-to-start')[0].addEventListener('click', function () {
+                endScreen.killSelf();
+                document.getElementById('hero-banner').style.display = 'flex';
+            });
 
             document.getElementsByClassName('btn-pause')[0].style.display = 'none';
             clearInterval(pipesCaller);
@@ -306,7 +336,4 @@ document.addEventListener('DOMContentLoaded', function() {
             pipeArray.length = 0;
         });
     });
-
-
 });
-
